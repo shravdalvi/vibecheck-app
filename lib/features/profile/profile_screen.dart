@@ -35,11 +35,11 @@ class ProfileScreen extends ConsumerWidget {
 
           const SectionHeader(title: 'Location sharing'),
           _buildSharingStatusRow(sharingStatus),
-          _buildCaptionRow('Your location is used only to show crowd levels. Others never see where you are.'),
+          _buildCaptionRow('Event staff can see your anonymous location on a live map during the event. Other attendees never can.'),
           if (sharingStatus == SharingStatus.sharing)
             _buildActionRow('Pause sharing', () => _showPauseSheet(context, ref))
           else
-            _buildActionRow('Resume sharing', () => ref.read(sharingStatusProvider.notifier).state = SharingStatus.sharing),
+            _buildActionRow('Resume sharing', () => ref.read(sharingStatusProvider.notifier).updateStatus(SharingStatus.sharing)),
           _buildActionRow('Stop sharing for this event', () => _showStopSheet(context, ref), isDestructive: true),
           const Divider(),
 
@@ -199,21 +199,21 @@ class ProfileScreen extends ConsumerWidget {
             ListTile(
               title: const Text('15 minutes', style: AppTypography.body),
               onTap: () {
-                ref.read(sharingStatusProvider.notifier).state = SharingStatus.paused;
+                ref.read(sharingStatusProvider.notifier).updateStatus(SharingStatus.paused);
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: const Text('1 hour', style: AppTypography.body),
               onTap: () {
-                ref.read(sharingStatusProvider.notifier).state = SharingStatus.paused;
+                ref.read(sharingStatusProvider.notifier).updateStatus(SharingStatus.paused);
                 Navigator.pop(context);
               },
             ),
             ListTile(
               title: const Text('Until I turn it back on', style: AppTypography.body),
               onTap: () {
-                ref.read(sharingStatusProvider.notifier).state = SharingStatus.paused;
+                ref.read(sharingStatusProvider.notifier).updateStatus(SharingStatus.paused);
                 Navigator.pop(context);
               },
             ),
@@ -248,7 +248,7 @@ class ProfileScreen extends ConsumerWidget {
               SecondaryButton(
                 label: 'Stop sharing',
                 onPressed: () {
-                  ref.read(sharingStatusProvider.notifier).state = SharingStatus.off;
+                  ref.read(sharingStatusProvider.notifier).updateStatus(SharingStatus.off);
                   Navigator.pop(context);
                 },
               ),

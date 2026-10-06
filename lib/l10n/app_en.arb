@@ -14,5 +14,6 @@
   "takeMeThere": "Take me there",
   "close": "Close",
   "youAreHere": "You are here",
-  "closed": "CLOSED"
+  "closed": "CLOSED",
+  "locationConsentText": "Event staff can see your anonymous location on a live map during the event. Other attendees never can."
 }

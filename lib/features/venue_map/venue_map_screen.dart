@@ -9,17 +9,22 @@ import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
 
-class VenueMapScreen extends StatefulWidget {
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/providers/profile_providers.dart';
+import 'dart:async';
+
+class VenueMapScreen extends ConsumerStatefulWidget {
   const VenueMapScreen({super.key});
 
   @override
-  State<VenueMapScreen> createState() => _VenueMapScreenState();
+  ConsumerState<VenueMapScreen> createState() => _VenueMapScreenState();
 }
 
-class _VenueMapScreenState extends State<VenueMapScreen> {
+class _VenueMapScreenState extends ConsumerState<VenueMapScreen> {
   final Set<String> _activeLayers = {'zones'};
   WebSocketChannel? _channel;
   List<Marker> _userMarkers = [];
+  StreamSubscription<Position>? _positionSubscription;
   
   final MapController _mapController = MapController();
   LatLng? _currentLocation;
@@ -66,7 +71,7 @@ class _VenueMapScreenState extends State<VenueMapScreen> {
     }
     
     // Listen to continuous location updates
-    Geolocator.getPositionStream(
+    _positionSubscription = Geolocator.getPositionStream(
       locationSettings: const LocationSettings(accuracy: LocationAccuracy.high, distanceFilter: 5),
     ).listen((Position position) {
       if (mounted) {
@@ -74,6 +79,10 @@ class _VenueMapScreenState extends State<VenueMapScreen> {
           _currentLocation = LatLng(position.latitude, position.longitude);
         });
         
+        // Only send real-time location if sharing is enabled
+        final status = ref.read(sharingStatusProvider);
+        if (status != SharingStatus.sharing) return;
+
         // Send real-time location to the backend
         if (_channel != null) {
           final locData = {
@@ -120,6 +129,7 @@ class _VenueMapScreenState extends State<VenueMapScreen> {
 
   @override
   void dispose() {
+    _positionSubscription?.cancel();
     _channel?.sink.close();
     super.dispose();
   }

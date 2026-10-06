@@ -29,3 +29,18 @@ class Zone(db.Model):
     event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False)
     name = db.Column(db.String(100), nullable=False)
     crowd_level = db.Column(db.String(20), default='low')
+
+class TelemetryHistory(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    event_id = db.Column(db.Integer, db.ForeignKey('event.id'), nullable=False, index=True)
+    participant_id = db.Column(db.String(255), nullable=False, index=True)
+    record_id = db.Column(db.String(255), unique=True, nullable=False)
+    seq = db.Column(db.Integer)
+    server_time = db.Column(db.DateTime, default=datetime.utcnow)
+    device_time = db.Column(db.DateTime)
+    latitude = db.Column(db.Float)
+    longitude = db.Column(db.Float)
+    accuracy_m = db.Column(db.Float)
+    speed_mps = db.Column(db.Float)
+    heading_deg = db.Column(db.Float)
+    is_simulated = db.Column(db.Boolean, default=False)

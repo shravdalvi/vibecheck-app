@@ -7,7 +7,6 @@
 import '../../../models/event.dart';
 import '../../../models/participant.dart';
 import '../../../models/telemetry.dart';
-import '../../../models/sos.dart';
 import '../../../models/recommendation.dart';
 import '../../../core/errors/app_exceptions.dart';
 
@@ -19,7 +18,7 @@ abstract class ApiAdapter {
   /// Join an event; returns participant ID and tokens
   ///
   /// Throws [NetworkException], [HttpException], [ValidationException]
-  Future<Participant> joinEvent({
+  Future<JoinResponse> joinEvent({
     required String eventCode,
     required String appVersion,
   });
@@ -39,7 +38,7 @@ abstract class ApiAdapter {
   /// Get event details and zone configuration
   ///
   /// Throws [NetworkException], [AuthException]
-  Future<Event> getEvent({
+  Future<EventConfigResponse> getConfig({
     required String eventId,
     required String accessToken,
   });
@@ -68,6 +67,19 @@ abstract class ApiAdapter {
   });
 
   // ============================================================================
+  // PRESENCE
+  // ============================================================================
+
+  /// Update presence state (ACTIVE, PAUSED, LEFT)
+  ///
+  /// Throws [NetworkException]
+  Future<void> updatePresence({
+    required String eventId,
+    required String state,
+    required String accessToken,
+  });
+
+  // ============================================================================
   // RECOMMENDATIONS
   // ============================================================================
 
@@ -83,28 +95,6 @@ abstract class ApiAdapter {
   /// Throws [NetworkException], [AuthException]
   Future<void> ackRecommendation({
     required String recommendationId,
-    required String accessToken,
-  });
-
-  // ============================================================================
-  // SOS / EMERGENCY
-  // ============================================================================
-
-  /// Submit an emergency SOS alert
-  ///
-  /// Returns SOS ID for tracking
-  ///
-  /// Throws [NetworkException], [SOSException]
-  Future<String> submitSOS({
-    required SOSSubmission sos,
-    required String accessToken,
-  });
-
-  /// Get SOS status
-  ///
-  /// Throws [NetworkException], [AuthException]
-  Future<SOSStatus> getSOSStatus({
-    required String sosId,
     required String accessToken,
   });
 
@@ -142,36 +132,32 @@ abstract class ApiAdapter {
 // ============================================================================
 
 class TelemetryBatchResponse {
-  final int acceptedCount;
-  final List<RejectedRecord> rejected;
+  final String zone;
+  final String zoneLevel;
+  final Recommendation? recommendation;
+  final int configVersion;
+  final String eventStatus;
+  final DateTime serverTime;
 
   const TelemetryBatchResponse({
-    required this.acceptedCount,
-    required this.rejected,
+    required this.zone,
+    required this.zoneLevel,
+    this.recommendation,
+    required this.configVersion,
+    required this.eventStatus,
+    required this.serverTime,
   });
 
   factory TelemetryBatchResponse.fromJson(Map<String, dynamic> json) {
-    final rejectedList = json['rejected'] as List?;
     return TelemetryBatchResponse(
-      acceptedCount: json['accepted_count'] as int,
-      rejected: rejectedList
-              ?.map((r) => RejectedRecord.fromJson(r as Map<String, dynamic>))
-              .toList() ??
-          [],
-    );
-  }
-}
-
-class RejectedRecord {
-  final String recordId;
-  final String reason;
-
-  const RejectedRecord({required this.recordId, required this.reason});
-
-  factory RejectedRecord.fromJson(Map<String, dynamic> json) {
-    return RejectedRecord(
-      recordId: json['record_id'] as String,
-      reason: json['reason'] as String,
+      zone: json['zone'] as String,
+      zoneLevel: json['zone_level'] as String,
+      recommendation: json['recommendation'] != null 
+          ? Recommendation.fromJson(json['recommendation'] as Map<String, dynamic>)
+          : null,
+      configVersion: json['config_version'] as int,
+      eventStatus: json['event_status'] as String,
+      serverTime: DateTime.parse(json['server_time'] as String),
     );
   }
 }
@@ -211,20 +197,16 @@ sealed class WebSocketMessage {
     switch (type) {
       case 'HEARTBEAT':
         return HeartbeatMessage.fromJson(json);
-      case 'ZONE_ASSIGNMENT':
-        return ZoneAssignmentMessage.fromJson(json);
-      case 'ZONE_ALERT':
-        return ZoneAlertMessage.fromJson(json);
-      case 'RECOMMENDATION':
-        return RecommendationMessage.fromJson(json);
-      case 'SOS_STATUS':
-        return SOSStatusMessage.fromJson(json);
       case 'CONFIG_UPDATE':
         return ConfigUpdateMessage.fromJson(json);
-      case 'EMERGENCY_NOTICE':
-        return EmergencyNoticeMessage.fromJson(json);
       case 'ANNOUNCEMENT':
         return AnnouncementMessage.fromJson(json);
+      case 'RECOMMENDATION':
+        return RecommendationMessage.fromJson(json);
+      case 'EVENT_STARTED':
+        return EventStartedMessage.fromJson(json);
+      case 'EVENT_ENDED':
+        return EventEndedMessage.fromJson(json);
       default:
         return UnknownMessage(type: type, data: json);
     }
@@ -232,182 +214,143 @@ sealed class WebSocketMessage {
 }
 
 class HeartbeatMessage extends WebSocketMessage {
-  final DateTime timestamp;
+  HeartbeatMessage() : super(type: 'HEARTBEAT');
+  factory HeartbeatMessage.fromJson(Map<String, dynamic> json) => HeartbeatMessage();
+}
 
-  HeartbeatMessage({required this.timestamp}) : super(type: 'HEARTBEAT');
-
-  factory HeartbeatMessage.fromJson(Map<String, dynamic> json) {
-    return HeartbeatMessage(
-      timestamp: DateTime.parse(json['timestamp'] as String),
-    );
+class ConfigUpdateMessage extends WebSocketMessage {
+  final int configVersion;
+  ConfigUpdateMessage({required this.configVersion}) : super(type: 'CONFIG_UPDATE');
+  factory ConfigUpdateMessage.fromJson(Map<String, dynamic> json) {
+    return ConfigUpdateMessage(configVersion: json['config_version'] as int);
   }
 }
 
-class ZoneAssignmentMessage extends WebSocketMessage {
-  final String eventId;
-  final String participantId;
-  final String zoneId;
-  final String zoneName;
-  final DateTime assignedAt;
-
-  ZoneAssignmentMessage({
-    required this.eventId,
-    required this.participantId,
-    required this.zoneId,
-    required this.zoneName,
-    required this.assignedAt,
-  }) : super(type: 'ZONE_ASSIGNMENT');
-
-  factory ZoneAssignmentMessage.fromJson(Map<String, dynamic> json) {
-    return ZoneAssignmentMessage(
-      eventId: json['event_id'] as String,
-      participantId: json['participant_id'] as String,
-      zoneId: json['zone_id'] as String,
-      zoneName: json['zone_name'] as String,
-      assignedAt: DateTime.parse(json['assigned_at'] as String),
-    );
-  }
-}
-
-class ZoneAlertMessage extends WebSocketMessage {
-  final String eventId;
-  final String zoneId;
-  final String zoneName;
-  final String density;
-  final int occupancy;
-  final int capacity;
-  final String message;
-  final String priority;
-  final DateTime createdAt;
-  final DateTime expiresAt;
-
-  ZoneAlertMessage({
-    required this.eventId,
-    required this.zoneId,
-    required this.zoneName,
-    required this.density,
-    required this.occupancy,
-    required this.capacity,
-    required this.message,
-    required this.priority,
-    required this.createdAt,
-    required this.expiresAt,
-  }) : super(type: 'ZONE_ALERT');
-
-  factory ZoneAlertMessage.fromJson(Map<String, dynamic> json) {
-    return ZoneAlertMessage(
-      eventId: json['event_id'] as String,
-      zoneId: json['zone_id'] as String,
-      zoneName: json['zone_name'] as String,
-      density: json['density'] as String,
-      occupancy: json['occupancy'] as int,
-      capacity: json['capacity'] as int,
-      message: json['message'] as String,
-      priority: json['priority'] as String? ?? 'NORMAL',
-      createdAt: DateTime.parse(json['created_at'] as String),
-      expiresAt: DateTime.parse(json['expires_at'] as String),
+class AnnouncementMessage extends WebSocketMessage {
+  final String id;
+  final String text;
+  final bool urgent;
+  final DateTime sentAt;
+  AnnouncementMessage({required this.id, required this.text, required this.urgent, required this.sentAt}) : super(type: 'ANNOUNCEMENT');
+  factory AnnouncementMessage.fromJson(Map<String, dynamic> json) {
+    return AnnouncementMessage(
+      id: json['id'] as String,
+      text: json['text'] as String,
+      urgent: json['urgent'] as bool? ?? false,
+      sentAt: DateTime.parse(json['sent_at'] as String),
     );
   }
 }
 
 class RecommendationMessage extends WebSocketMessage {
   final Recommendation recommendation;
-
-  RecommendationMessage({required this.recommendation})
-      : super(type: 'RECOMMENDATION');
-
+  RecommendationMessage({required this.recommendation}) : super(type: 'RECOMMENDATION');
   factory RecommendationMessage.fromJson(Map<String, dynamic> json) {
-    return RecommendationMessage(
-      recommendation: Recommendation.fromJson(json),
-    );
+    return RecommendationMessage(recommendation: Recommendation.fromJson(json));
   }
 }
 
-class SOSStatusMessage extends WebSocketMessage {
-  final SOSStatus sosStatus;
-
-  SOSStatusMessage({required this.sosStatus}) : super(type: 'SOS_STATUS');
-
-  factory SOSStatusMessage.fromJson(Map<String, dynamic> json) {
-    return SOSStatusMessage(
-      sosStatus: SOSStatus.fromJson(json),
-    );
-  }
+class EventStartedMessage extends WebSocketMessage {
+  EventStartedMessage() : super(type: 'EVENT_STARTED');
+  factory EventStartedMessage.fromJson(Map<String, dynamic> json) => EventStartedMessage();
 }
 
-class ConfigUpdateMessage extends WebSocketMessage {
-  final int configVersion;
-  final String eventId;
-  final Map<String, dynamic> config;
-
-  ConfigUpdateMessage({
-    required this.configVersion,
-    required this.eventId,
-    required this.config,
-  }) : super(type: 'CONFIG_UPDATE');
-
-  factory ConfigUpdateMessage.fromJson(Map<String, dynamic> json) {
-    return ConfigUpdateMessage(
-      configVersion: json['config_version'] as int,
-      eventId: json['event_id'] as String,
-      config: {...json}..remove('type'),
-    );
-  }
-}
-
-class EmergencyNoticeMessage extends WebSocketMessage {
-  final String eventId;
-  final String severity;
-  final String message;
-  final String? action;
-  final List<Map<String, dynamic>>? assemblyPoints;
-
-  EmergencyNoticeMessage({
-    required this.eventId,
-    required this.severity,
-    required this.message,
-    this.action,
-    this.assemblyPoints,
-  }) : super(type: 'EMERGENCY_NOTICE');
-
-  factory EmergencyNoticeMessage.fromJson(Map<String, dynamic> json) {
-    return EmergencyNoticeMessage(
-      eventId: json['event_id'] as String,
-      severity: json['severity'] as String,
-      message: json['message'] as String,
-      action: json['action'] as String?,
-      assemblyPoints:
-          (json['assembly_points'] as List?)?.cast<Map<String, dynamic>>(),
-    );
-  }
-}
-
-class AnnouncementMessage extends WebSocketMessage {
-  final String announcementId;
-  final String eventId;
-  final String message;
-  final String priority;
-
-  AnnouncementMessage({
-    required this.announcementId,
-    required this.eventId,
-    required this.message,
-    required this.priority,
-  }) : super(type: 'ANNOUNCEMENT');
-
-  factory AnnouncementMessage.fromJson(Map<String, dynamic> json) {
-    return AnnouncementMessage(
-      announcementId: json['announcement_id'] as String,
-      eventId: json['event_id'] as String,
-      message: json['message'] as String,
-      priority: json['priority'] as String? ?? 'LOW',
-    );
-  }
+class EventEndedMessage extends WebSocketMessage {
+  EventEndedMessage() : super(type: 'EVENT_ENDED');
+  factory EventEndedMessage.fromJson(Map<String, dynamic> json) => EventEndedMessage();
 }
 
 class UnknownMessage extends WebSocketMessage {
   final Map<String, dynamic> data;
+  UnknownMessage({required String type, required this.data}) : super(type: type);
+}
 
-  UnknownMessage({required String type, required this.data})
-      : super(type: type);
+class EventConfigResponse {
+  final int configVersion;
+  final Map<String, dynamic> map;
+  final List<Zone> zones;
+  final List<Map<String, dynamic>> pois;
+  final Map<String, dynamic> thresholds;
+  final SamplingPolicy sampling;
+  final Map<String, dynamic> copy;
+
+  const EventConfigResponse({
+    required this.configVersion,
+    required this.map,
+    required this.zones,
+    required this.pois,
+    required this.thresholds,
+    required this.sampling,
+    required this.copy,
+  });
+
+  factory EventConfigResponse.fromJson(Map<String, dynamic> json) {
+    return EventConfigResponse(
+      configVersion: json['config_version'] as int,
+      map: json['map'] as Map<String, dynamic>? ?? {},
+      zones: (json['zones'] as List?)?.map((z) => Zone.fromJson(z as Map<String, dynamic>)).toList() ?? [],
+      pois: (json['pois'] as List?)?.cast<Map<String, dynamic>>() ?? [],
+      thresholds: json['thresholds'] as Map<String, dynamic>? ?? {},
+      sampling: SamplingPolicy.fromJson(json['sampling'] as Map<String, dynamic>),
+      copy: json['copy'] as Map<String, dynamic>? ?? {},
+    );
+  }
+}
+
+class EventInfo {
+  final String id;
+  final String name;
+  final String type;
+  final String status;
+  final DateTime startsAt;
+  final DateTime endsAt;
+  final String venueName;
+
+  EventInfo({
+    required this.id,
+    required this.name,
+    required this.type,
+    required this.status,
+    required this.startsAt,
+    required this.endsAt,
+    required this.venueName,
+  });
+
+  factory EventInfo.fromJson(Map<String, dynamic> json) {
+    return EventInfo(
+      id: json['id'] as String,
+      name: json['name'] as String,
+      type: json['type'] as String,
+      status: json['status'] as String,
+      startsAt: DateTime.parse(json['starts_at'] as String),
+      endsAt: DateTime.parse(json['ends_at'] as String),
+      venueName: json['venue_name'] as String,
+    );
+  }
+}
+
+class JoinResponse {
+  final String sessionToken;
+  final String refreshToken;
+  final String participantId;
+  final EventInfo event;
+  final EventConfigResponse config;
+
+  JoinResponse({
+    required this.sessionToken,
+    required this.refreshToken,
+    required this.participantId,
+    required this.event,
+    required this.config,
+  });
+
+  factory JoinResponse.fromJson(Map<String, dynamic> json) {
+    return JoinResponse(
+      sessionToken: json['session_token'] as String,
+      refreshToken: json['refresh_token'] as String,
+      participantId: json['participant_id'] as String,
+      event: EventInfo.fromJson(json['event'] as Map<String, dynamic>),
+      config: EventConfigResponse.fromJson(json['config'] as Map<String, dynamic>),
+    );
+  }
 }

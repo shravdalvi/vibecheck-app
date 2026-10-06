@@ -17,14 +17,18 @@ class CurrentZoneState {
   });
 }
 
-final currentZoneProvider = Provider<CurrentZoneState>((ref) {
-  return const CurrentZoneState(
+class CurrentZoneNotifier extends Notifier<CurrentZoneState> {
+  @override
+  CurrentZoneState build() => const CurrentZoneState(
     name: 'Zone B',
     level: CrowdLevel.high,
     fillPercentage: 0.85,
-    lastUpdated: '12 s ago',
+    lastUpdated: 'Just now',
   );
-});
+  set state(CurrentZoneState value) => super.state = value;
+}
+
+final currentZoneProvider = NotifierProvider<CurrentZoneNotifier, CurrentZoneState>(() => CurrentZoneNotifier());
 
 class AnnouncementState {
   final String message;
