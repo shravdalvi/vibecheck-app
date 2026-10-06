@@ -1,0 +1,316 @@
+# ============================================================================
+# FLUTTER / DART / PUB
+# ============================================================================
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# VS Code
+#.vscode/
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+.pub-cache/
+.pub/
+/build/
+/buildWeb/
+/coverage/
+lib/generated_plugin_registrant.dart
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# ============================================================================
+# IOS / MACOS
+# ============================================================================
+**/ios/**/*.mode1v3
+**/ios/**/*.mode2v3
+**/ios/**/*.moved-aside
+**/ios/**/*.pbxuser
+**/ios/**/*.perspectivev3
+**/ios/**/*sync/
+**/ios/**/.sconsign.dblite
+**/ios/**/.tags*
+**/ios/**/.vagrant/
+**/ios/**/DerivedData/
+**/ios/**/Icon?
+**/ios/**/Pods/
+**/ios/**/.symlinks/
+**/ios/**/Flutter/Flutter.framework
+**/ios/**/Flutter/Flutter.podspec
+**/ios/**/Flutter/Generated.xcconfig
+**/ios/**/Flutter/ephemeral/
+**/ios/**/Flutter/app.flx
+**/ios/**/Flutter/app.zip
+**/ios/**/Flutter/flutter_assets/
+**/ios/**/Flutter/flutter_export_environment.sh
+**/ios/**/ServiceArtifacts/
+**/ios/**/xcuser.xcuserdatad/
+**/ios/.symlinks/
+**/ios/.generated.xcode.build_settings.json
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+**/macos/Flutter/ephemeral/
+**/macos/Flutter/GeneratedPluginRegistrant.swift
+
+# iOS/macOS Podfile.lock
+Podfile.lock
+
+# ============================================================================
+# ANDROID
+# ============================================================================
+**/android/**/gradle-wrapper.jar
+**/android/.gradle
+**/android/captures/
+**/android/gradlew
+**/android/gradlew.bat
+**/android/local.properties
+**/android/**/GeneratedPluginRegistrant.java
+**/android/**/GeneratedPluginRegistrant.kotlin
+**/android/key.properties
+**/android/**/google-services.json
+**/android/**/release/
+**/android/**/debug/
+**/android/**/profile/
+
+# Android Studio
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# KeyStore files
+*.jks
+*.keystore
+
+# ============================================================================
+# LINUX / WINDOWS WEB
+# ============================================================================
+linux/flutter/ephemeral/
+windows/flutter/ephemeral/
+web/js_compiled/
+
+# ============================================================================
+# PYTHON BACKEND
+# ============================================================================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Flask
+instance/
+.webassets-cache
+
+# Scrapy
+.scrapy
+
+# Sphinx
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Environments
+backend/venv/
+backend/.venv/
+backend/venv3/
+backend/env/
+.env
+.env.local
+.env.*.local
+.env.dev
+.env.prod
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ============================================================================
+# IDE / EDITOR
+# ============================================================================
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+*.orig
+
+# ============================================================================
+# OPERATING SYSTEM
+# ============================================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+desktop.ini
+Thumbs.db
+.LSOverride
+.AppleDouble
+.AppleDB
+
+# ============================================================================
+# GENERATED / BUILD
+# ============================================================================
+lib/generated/
+lib/locales/generated/
+.dart_plugins_generated
+.dart_tool/package_config.json
+/build/
+**/build/
+**/dist/
+
+# ============================================================================
+# SENSITIVE / CREDENTIALS
+# ============================================================================
+*.pem
+*.key
+*.crt
+*.p12
+*.p8
+*.mobileprovision
+*.p8
+google-services.json
+GoogleService-Info.plist
+Firebase_Credentials.json
+config.local.json
+secrets.json
+.firebaserc
+config.secrets.json
+.env.secrets
+aws.credentials
+
+# ============================================================================
+# LOGS
+# ============================================================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+firebase-debug.log
+ui-debug.log
+
+# ============================================================================
+# RUNTIME / TEMPORARY
+# ============================================================================
+tmp/
+temp/
+*.tmp
+.cache/
+instance/
+
+# ============================================================================
+# PACKAGE MANAGERS
+# ============================================================================
+node_modules/
+package-lock.json
+
+# ============================================================================
+# BINARY / COMPILED
+# ============================================================================
+*.apk
+*.aab
+*.ipa
+*.app
+*.aar
+*.zip

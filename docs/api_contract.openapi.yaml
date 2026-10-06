@@ -1,0 +1,194 @@
+openapi: 3.0.3
+info:
+  title: VenueFlow Backend API
+  version: 1.0.0
+  description: The contract between the Vibecheck app and the VenueFlow backend.
+servers:
+  - url: http://localhost:8000/api/v1
+    description: Mock Server
+paths:
+  /auth/join:
+    post:
+      summary: Join an event using a code or QR payload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                event_code:
+                  type: string
+      responses:
+        '200':
+          description: Successfully joined the event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  participant_id:
+                    type: string
+                  access_token:
+                    type: string
+                  event_id:
+                    type: string
+                  event_name:
+                    type: string
+  /event/{event_id}/config:
+    get:
+      summary: Get event configuration (zones, map, sampling rates)
+      parameters:
+        - name: event_id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Event configuration including map and zones
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  zones:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Zone'
+                  map_url:
+                    type: string
+                  telemetry_intervals:
+                    $ref: '#/components/schemas/TelemetryIntervals'
+  /telemetry:
+    post:
+      summary: Upload telemetry batch
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: '#/components/schemas/TelemetryRecord'
+      responses:
+        '202':
+          description: Telemetry accepted
+  /sos:
+    post:
+      summary: Send an SOS alert
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SOSRecord'
+      responses:
+        '201':
+          description: SOS acknowledged by the control room
+components:
+  schemas:
+    Zone:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        polygon:
+          type: array
+          items:
+            type: array
+            items:
+              type: number
+    TelemetryIntervals:
+      type: object
+      properties:
+        stationary_s:
+          type: integer
+        walking_s:
+          type: integer
+        high_movement_s:
+          type: integer
+        background_s:
+          type: integer
+    TelemetryRecord:
+      type: object
+      properties:
+        schema_version:
+          type: integer
+        record_id:
+          type: string
+        seq:
+          type: integer
+        event_id:
+          type: string
+        participant_id:
+          type: string
+        source_type:
+          type: string
+        is_simulated:
+          type: boolean
+        device_time:
+          type: string
+          format: date-time
+        clock_offset_ms:
+          type: integer
+        latitude:
+          type: number
+        longitude:
+          type: number
+        accuracy_m:
+          type: number
+        speed_mps:
+          type: number
+        heading_deg:
+          type: number
+        mock_location_flag:
+          type: boolean
+        movement_score:
+          type: integer
+        movement_state:
+          type: string
+        accel_variance:
+          type: number
+        motion_intensity_raw:
+          type: number
+        zone_hint:
+          type: string
+        sampling_mode:
+          type: string
+        battery_level:
+          type: integer
+        gps_enabled:
+          type: boolean
+        location_permission:
+          type: string
+        network_status:
+          type: string
+        app_status:
+          type: string
+        last_successful_upload:
+          type: string
+          format: date-time
+    SOSRecord:
+      type: object
+      properties:
+        idempotency_key:
+          type: string
+        participant_id:
+          type: string
+        event_id:
+          type: string
+        device_time:
+          type: string
+          format: date-time
+        type:
+          type: string
+          enum: [Medical, Security, Crowd crush, Lost child, Other]
+        latitude:
+          type: number
+        longitude:
+          type: number
+        accuracy_m:
+          type: number

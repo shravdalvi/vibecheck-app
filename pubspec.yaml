@@ -1,0 +1,87 @@
+name: vibecheck
+description: "Vibecheck: Safe Crowd Guide - A privacy-first crowd-safety attendee app."
+version: 1.0.0+1
+publish_to: "none"
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.13.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # State management
+  riverpod: ^3.1.0
+  flutter_riverpod: ^3.1.0
+  riverpod_generator: ^4.0.0+1
+
+  # Routing
+  go_router: ^17.5.0
+  app_links: ^7.0.0
+
+  # Map
+  flutter_map: ^6.1.0
+  latlong2: ^0.9.0
+
+  # HTTP & WebSocket
+  dio: ^5.3.1
+  web_socket_channel: ^3.0.3
+
+  # Location & Sensors
+  geolocator: ^14.1.1
+  sensors_plus: ^7.1.1
+
+  # Connectivity & Battery
+  connectivity_plus: ^7.3.1
+  battery_plus: ^7.1.2
+
+  # Storage
+  flutter_secure_storage: ^11.2.0
+  drift: ^2.14.0
+  sqlite3_flutter_libs: ^0.6.0+eol
+
+  # QR & Deep Links (already have app_links)
+  mobile_scanner: ^7.4.2
+
+  # Firebase (interface, for later)
+  firebase_core: ^4.15.0
+  firebase_messaging: ^16.7.0
+
+  # Localization
+  intl: ^0.20.3
+
+  # UI & Theme
+  auto_size_text: ^3.0.0
+  google_fonts: ^6.2.1
+  phosphor_flutter: ^2.0.0
+  uuid: ^4.3.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^6.0.0
+  build_runner: ^2.4.0
+  drift_dev: ^2.14.0
+
+  # Testing
+  mockito: ^5.4.0
+  mocktail: ^1.0.0
+
+flutter:
+  uses-material-design: true
+
+  # Assets (maps, icons, etc)
+  assets:
+    - assets/
+    - assets/venue_maps/
+    - assets/locales/
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
