@@ -1,0 +1,18 @@
+{
+  "@@locale": "hi",
+  "homeTitle": "होम",
+  "zonesTitle": "ज़ोन",
+  "mapTitle": "नक्शा",
+  "profileTitle": "प्रोफ़ाइल",
+  "outsideVenue": "कार्यक्रम स्थल के बाहर",
+  "youAreGood": "आप सुरक्षित हैं। यहाँ सब ठीक है।",
+  "sharingPaused": "साझा करना रोका गया है। हम नहीं बता सकते कि आप किस ज़ोन में हैं।",
+  "resumeSharing": "साझा करना फिर से शुरू करें",
+  "nearestExit": "निकटतम निकास",
+  "nearestMedical": "निकटतम चिकित्सा",
+  "sortedByRoomy": "भीड़ के अनुसार क्रमित।",
+  "takeMeThere": "मुझे वहाँ ले चलो",
+  "close": "बंद करें",
+  "youAreHere": "आप यहाँ हैं",
+  "closed": "बंद"
+}

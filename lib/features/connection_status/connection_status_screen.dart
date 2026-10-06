@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/section_header.dart';
+import '../../core/ui/section_header.dart';
 
 class ConnectionStatusScreen extends StatelessWidget {
   const ConnectionStatusScreen({super.key});

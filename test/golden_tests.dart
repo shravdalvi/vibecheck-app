@@ -1,23 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:vibecheck/core/theme/app_theme.dart';
-import 'package:vibecheck/core/theme/colors.dart';
 import 'package:vibecheck/features/home/home_screen.dart';
-import 'package:vibecheck/features/emergency/sos_screen.dart';
-import 'package:vibecheck/features/venue_map/venue_map_screen.dart';
-import 'package:vibecheck/widgets/zone_ring.dart';
+import 'package:vibecheck/features/zones/zones_screen.dart';
+import 'package:vibecheck/features/map/map_screen.dart';
+import 'package:vibecheck/features/profile/profile_screen.dart';
+import 'package:vibecheck/core/providers/mock_providers.dart';
+import 'package:vibecheck/core/providers/profile_providers.dart';
+import 'package:vibecheck/core/ui/crowd_level_chip.dart';
 
-Widget _wrap(Widget child) => MaterialApp(
+Widget _wrap(Widget child, {List<Override> overrides = const []}) {
+  return ProviderScope(
+    overrides: overrides,
+    child: MaterialApp(
       theme: AppTheme.dark,
+      highContrastTheme: AppTheme.highContrastDark,
       home: child,
       debugShowCheckedModeBanner: false,
-    );
+    ),
+  );
+}
 
 void main() {
-  group('Golden tests — Home (all crowd levels)', () {
+  group('Golden tests — Home', () {
     for (final level in CrowdLevel.values) {
       testWidgets('Home screen — ${level.name}', (tester) async {
-        await tester.pumpWidget(_wrap(const HomeScreen()));
+        await tester.pumpWidget(_wrap(
+          const HomeScreen(),
+          overrides: [
+            currentZoneProvider.overrideWithValue(
+              CurrentZoneState(name: 'Zone A', level: level, fillPercentage: 0.5, lastUpdated: '12 s ago'),
+            ),
+            recommendationProvider.overrideWith((ref) => null),
+            announcementProvider.overrideWith((ref) => null),
+          ],
+        ));
         await tester.pumpAndSettle();
         await expectLater(
           find.byType(MaterialApp),
@@ -27,79 +45,55 @@ void main() {
     }
   });
 
-  group('Golden tests — SOS flow states', () {
-    testWidgets('SOS screen — initial select state', (tester) async {
-      await tester.pumpWidget(_wrap(const SosScreen()));
-      await tester.pump(); // Don't settle — avoids animation issues
+  group('Golden tests — Zones', () {
+    testWidgets('Zones screen list', (tester) async {
+      await tester.pumpWidget(_wrap(const ZonesScreen()));
+      await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),
-        matchesGoldenFile('goldens/sos_select.png'),
+        matchesGoldenFile('goldens/zones_list.png'),
       );
     });
   });
 
-  group('Golden tests — Venue Map', () {
-    testWidgets('Venue map screen', (tester) async {
-      await tester.pumpWidget(_wrap(const VenueMapScreen()));
-      await tester.pump();
+  group('Golden tests — Map', () {
+    testWidgets('Map screen', (tester) async {
+      await tester.pumpWidget(_wrap(const MapScreen()));
+      await tester.pumpAndSettle();
       await expectLater(
         find.byType(MaterialApp),
-        matchesGoldenFile('goldens/venue_map.png'),
+        matchesGoldenFile('goldens/map.png'),
       );
     });
   });
 
-  group('Widget tests — ZoneRing crowd levels', () {
-    testWidgets('ZoneRing shows correct zone name and label', (tester) async {
+  group('Golden tests — Profile', () {
+    testWidgets('Profile screen — Sharing', (tester) async {
       await tester.pumpWidget(_wrap(
-        const Scaffold(
-          body: Center(
-            child: ZoneRing(zoneName: 'Zone B', level: CrowdLevel.high),
-          ),
-        ),
+        const ProfileScreen(),
+        overrides: [
+          sharingStatusProvider.overrideWith((ref) => SharingStatus.sharing),
+        ],
       ));
-      expect(find.text('Zone B'), findsOneWidget);
-      expect(find.text('Packed'), findsOneWidget);
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/profile_sharing.png'),
+      );
     });
-
-    testWidgets('ZoneRing critical state shows correct label', (tester) async {
+    
+    testWidgets('Profile screen — Paused', (tester) async {
       await tester.pumpWidget(_wrap(
-        const Scaffold(
-          body: Center(
-            child: ZoneRing(zoneName: 'Zone C', level: CrowdLevel.critical),
-          ),
-        ),
+        const ProfileScreen(),
+        overrides: [
+          sharingStatusProvider.overrideWith((ref) => SharingStatus.paused),
+        ],
       ));
-      expect(find.text('Overcrowded'), findsOneWidget);
-    });
-  });
-
-  group('Widget tests — SOS screen', () {
-    testWidgets('SOS screen shows type chips', (tester) async {
-      await tester.pumpWidget(_wrap(const SosScreen()));
-      expect(find.text('Medical'), findsOneWidget);
-      expect(find.text('Crowd crush'), findsOneWidget);
-    });
-  });
-
-  group('Widget tests — Home screen', () {
-    testWidgets('Home screen shows event name', (tester) async {
-      await tester.pumpWidget(_wrap(const HomeScreen()));
-      await tester.pump();
-      expect(find.text('Demo Concert 2025'), findsOneWidget);
-    });
-
-    testWidgets('Home screen shows zone ring', (tester) async {
-      await tester.pumpWidget(_wrap(const HomeScreen()));
-      await tester.pump();
-      expect(find.byType(ZoneRing), findsOneWidget);
-    });
-
-    testWidgets('Home screen shows SOS button', (tester) async {
-      await tester.pumpWidget(_wrap(const HomeScreen()));
-      await tester.pump();
-      // SOS text is in the hold button
-      expect(find.text('SOS'), findsOneWidget);
+      await tester.pumpAndSettle();
+      await expectLater(
+        find.byType(MaterialApp),
+        matchesGoldenFile('goldens/profile_paused.png'),
+      );
     });
   });
 }

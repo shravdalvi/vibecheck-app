@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../core/theme/colors.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/spacing.dart';
+import '../theme/colors.dart';
+import '../theme/typography.dart';
+import '../theme/spacing.dart';
 
 class PrimaryButton extends StatelessWidget {
   const PrimaryButton({

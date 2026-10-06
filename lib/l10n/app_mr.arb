@@ -1,0 +1,18 @@
+{
+  "@@locale": "mr",
+  "homeTitle": "मुख्य पृष्ठ",
+  "zonesTitle": "झोन",
+  "mapTitle": "नकाशा",
+  "profileTitle": "प्रोफाइल",
+  "outsideVenue": "स्थळाच्या बाहेर",
+  "youAreGood": "तुम्ही सुरक्षित आहात. येथे सर्व ठीक आहे.",
+  "sharingPaused": "शेअरिंग थांबवले आहे. तुम्ही कोणत्या झोनमध्ये आहात हे आम्ही सांगू शकत नाही.",
+  "resumeSharing": "शेअरिंग पुन्हा सुरू करा",
+  "nearestExit": "जवळचा एक्झिट",
+  "nearestMedical": "जवळची वैद्यकीय मदत",
+  "sortedByRoomy": "गर्दीनुसार क्रमवारी लावली.",
+  "takeMeThere": "मला तिथे घेऊन चला",
+  "close": "बंद करा",
+  "youAreHere": "तुम्ही येथे आहात",
+  "closed": "बंद"
+}

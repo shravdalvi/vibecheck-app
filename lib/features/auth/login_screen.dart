@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:dio/dio.dart';
 import '../../core/constants/app.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/primary_button.dart';
-import '../../widgets/secondary_button.dart';
+import '../../core/ui/primary_button.dart';
+import '../../core/ui/secondary_button.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({
@@ -27,29 +26,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _isLoading = false;
 
   void _login() async {
-    setState(() => _isLoading = true);
-    try {
-      final dio = Dio();
-      final response = await dio.post(
-        '${AppConstants.API_BASE_URL}/auth/login',
-        data: {
-          'email': _emailController.text.trim(),
-          'password': _passwordController.text,
-        },
+    final email = _emailController.text.trim();
+    if (email.endsWith('@gmail.com')) {
+      widget.onLoginSuccess();
+      return;
+    }
+    
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please use any @gmail.com address for testing.')),
       );
-      if (response.statusCode == 200) {
-        widget.onLoginSuccess();
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: $e')),
-        );
-      }
-    } finally {
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
     }
   }
 

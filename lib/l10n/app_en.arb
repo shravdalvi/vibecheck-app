@@ -1,0 +1,18 @@
+{
+  "@@locale": "en",
+  "homeTitle": "Home",
+  "zonesTitle": "Zones",
+  "mapTitle": "Map",
+  "profileTitle": "Profile",
+  "outsideVenue": "Outside the venue",
+  "youAreGood": "You're good. All clear here.",
+  "sharingPaused": "Sharing is paused. We can't tell which zone you're in.",
+  "resumeSharing": "Resume sharing",
+  "nearestExit": "Nearest exit",
+  "nearestMedical": "Nearest medical",
+  "sortedByRoomy": "Sorted by how roomy they are.",
+  "takeMeThere": "Take me there",
+  "close": "Close",
+  "youAreHere": "You are here",
+  "closed": "CLOSED"
+}

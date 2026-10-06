@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/spacing.dart';
-import '../core/theme/colors.dart';
+import '../theme/typography.dart';
+import '../theme/spacing.dart';
+import '../theme/colors.dart';
 
 class SectionHeader extends StatelessWidget {
-  const SectionHeader({super.key, required this.title});
   final String title;
+  const SectionHeader({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -17,8 +17,8 @@ class SectionHeader extends StatelessWidget {
         bottom: AppSpacing.sm,
       ),
       child: Text(
-        title,
-        style: AppTypography.caption.copyWith(color: AppColors.fogSecondary),
+        title.toUpperCase(),
+        style: AppTypography.label.copyWith(color: AppColors.fogSecondary),
       ),
     );
   }

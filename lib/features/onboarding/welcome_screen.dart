@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/primary_button.dart';
+import '../../core/ui/primary_button.dart';
 
 class WelcomeScreen extends StatelessWidget {
   const WelcomeScreen({super.key, required this.onContinue});

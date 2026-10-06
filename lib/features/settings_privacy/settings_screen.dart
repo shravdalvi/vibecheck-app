@@ -3,8 +3,8 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/list_row.dart';
-import '../../widgets/section_header.dart';
+import '../../core/ui/list_row.dart';
+import '../../core/ui/section_header.dart';
 
 class SettingsScreen extends StatefulWidget {
   const SettingsScreen({super.key});

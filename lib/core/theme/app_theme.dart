@@ -112,4 +112,26 @@ class AppTheme {
       ),
     );
   }
+
+  static ThemeData get highContrastDark {
+    final base = dark;
+    return base.copyWith(
+      dividerTheme: const DividerThemeData(
+        color: AppColors.fogSecondary, thickness: 2, space: 2,
+      ),
+      chipTheme: base.chipTheme.copyWith(
+        side: const BorderSide(color: AppColors.fogSecondary, width: 2),
+      ),
+      inputDecorationTheme: base.inputDecorationTheme.copyWith(
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          borderSide: const BorderSide(color: AppColors.fogSecondary, width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(AppSpacing.radiusCard),
+          borderSide: const BorderSide(color: AppColors.fogSecondary, width: 2),
+        ),
+      ),
+    );
+  }
 }

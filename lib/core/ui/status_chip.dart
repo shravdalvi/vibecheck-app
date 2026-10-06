@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../core/theme/typography.dart';
-import '../core/theme/spacing.dart';
+import '../theme/typography.dart';
+import '../theme/spacing.dart';
 
 class StatusChip extends StatelessWidget {
   const StatusChip({

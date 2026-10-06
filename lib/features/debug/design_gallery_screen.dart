@@ -3,16 +3,16 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/primary_button.dart';
-import '../../widgets/secondary_button.dart';
-import '../../widgets/status_chip.dart';
-import '../../widgets/zone_ring.dart';
-import '../../widgets/recommendation_card.dart';
-import '../../widgets/list_row.dart';
-import '../../widgets/section_header.dart';
-import '../../widgets/sos_hold_button.dart';
-import '../../widgets/simulation_banner.dart';
-import '../../widgets/status_dot.dart';
+import '../../core/ui/primary_button.dart';
+import '../../core/ui/secondary_button.dart';
+import '../../core/ui/status_chip.dart';
+import '../../core/ui/zone_ring.dart';
+import '../../core/ui/recommendation_card.dart';
+import '../../core/ui/list_row.dart';
+import '../../core/ui/section_header.dart';
+import '../../core/ui/sos_hold_button.dart';
+import '../../core/ui/simulation_banner.dart';
+import '../../core/ui/status_dot.dart';
 
 class DesignGalleryScreen extends StatelessWidget {
   const DesignGalleryScreen({super.key});

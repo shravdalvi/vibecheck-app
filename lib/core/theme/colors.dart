@@ -21,6 +21,4 @@ class AppColors {
   static const Color riskModerate = Color(0xFFFFC857);
   static const Color riskHigh = Color(0xFFFF8A3D);
   static const Color riskCritical = Color(0xFFFF4D4F);
-  
-  static const Color sos = riskCritical;
 }

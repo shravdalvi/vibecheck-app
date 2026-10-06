@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../core/theme/colors.dart';
 import '../../core/theme/typography.dart';
 import '../../core/theme/spacing.dart';
-import '../../widgets/primary_button.dart';
-import '../../widgets/secondary_button.dart';
+import '../../core/ui/primary_button.dart';
+import '../../core/ui/secondary_button.dart';
 
 class ConsentScreen extends StatelessWidget {
   const ConsentScreen({
